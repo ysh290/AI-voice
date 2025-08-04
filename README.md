@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # guigu_project
 
 This template should help get you started developing with Vue 3 in Vite.
@@ -37,3 +38,6 @@ npm run build
 ```sh
 npm run lint
 ```
+=======
+# AI-voice
+>>>>>>> c4deb214fbeb2f129509867358101691e5b20978
