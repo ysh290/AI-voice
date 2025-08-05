@@ -197,7 +197,7 @@ const isCollapse = ref(false)
 }
 .layout_slider {
   background: var(--card-color);
-  width: 200px;
+  // width: 200px;
   height: 100vh;
   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
   transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
