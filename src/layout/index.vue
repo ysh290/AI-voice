@@ -13,8 +13,8 @@
               <component :is="isCollapse ? 'Expand' : 'Fold'" />
             </el-icon>
             <el-breadcrumb class="breadcrumb" :separator-icon="ArrowRight">
-              <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-              <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+              <el-breadcrumb-item>语音库</el-breadcrumb-item>
+              <el-breadcrumb-item>语料</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
           <div class="tabbar_right">
