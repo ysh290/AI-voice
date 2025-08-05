@@ -3,7 +3,7 @@
     <!-- 欢迎标题区域 -->
     <div class="welcome-section">
       <h1 class="welcome-title">智能语言，让教学更有温度</h1>
-      <p class="welcome-subtitle">AI VoiceEduGen - 让每一次教学都充满温度与智慧</p>
+      <p class="welcome-subtitle">AI Voice - 让每一次教学都充满温度与智慧</p>
     </div>
 
     <!-- 功能卡片区域 -->
@@ -97,6 +97,28 @@
       </div>
     </div>
 
+    <!-- 实时波形图区域 -->
+    <div class="waveform-section">
+      <div class="waveform-header">
+        <h2>实时语音特征波形</h2>
+        <div class="waveform-legend">
+          <span class="legend speed">语速</span>
+          <span class="legend pitch">语调</span>
+          <span class="legend emotion">情感强度</span>
+        </div>
+      </div>
+      <div class="waveform-card">
+        <svg class="waveform-svg" width="100%" height="120" viewBox="0 0 600 120">
+          <!-- 语速曲线 -->
+          <polyline :points="speedPoints" fill="none" stroke="#409EFF" stroke-width="3" />
+          <!-- 语调曲线 -->
+          <polyline :points="pitchPoints" fill="none" stroke="#67C23A" stroke-width="3" />
+          <!-- 情感强度曲线 -->
+          <polyline :points="emotionPoints" fill="none" stroke="#F56C6C" stroke-width="3" />
+        </svg>
+      </div>
+    </div>
+
     <!-- 图表区域 -->
     <div class="chart-section">
       <div class="chart-header">
@@ -147,43 +169,43 @@
             <path
               d="M 120 140 L 200 136 L 280 128 L 360 100 L 440 114 L 520 90 L 600 94 L 680 76 L 760 84"
               fill="none"
-              stroke="#409EFF"
+              stroke="#FF6B6B"
               stroke-width="3"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
 
             <!-- 数据1点 -->
-            <circle cx="120" cy="140" r="4" fill="#409EFF" />
-            <circle cx="200" cy="136" r="4" fill="#409EFF" />
-            <circle cx="280" cy="128" r="4" fill="#409EFF" />
-            <circle cx="360" cy="100" r="4" fill="#409EFF" />
-            <circle cx="440" cy="114" r="4" fill="#409EFF" />
-            <circle cx="520" cy="90" r="4" fill="#409EFF" />
-            <circle cx="600" cy="94" r="4" fill="#409EFF" />
-            <circle cx="680" cy="76" r="4" fill="#409EFF" />
-            <circle cx="760" cy="84" r="4" fill="#409EFF" />
+            <circle cx="120" cy="140" r="4" fill="#FF6B6B" />
+            <circle cx="200" cy="136" r="4" fill="#FF6B6B" />
+            <circle cx="280" cy="128" r="4" fill="#FF6B6B" />
+            <circle cx="360" cy="100" r="4" fill="#FF6B6B" />
+            <circle cx="440" cy="114" r="4" fill="#FF6B6B" />
+            <circle cx="520" cy="90" r="4" fill="#FF6B6B" />
+            <circle cx="600" cy="94" r="4" fill="#FF6B6B" />
+            <circle cx="680" cy="76" r="4" fill="#FF6B6B" />
+            <circle cx="760" cy="84" r="4" fill="#FF6B6B" />
 
             <!-- 数据2线条 (完成率) -->
             <path
               d="M 120 80 L 200 84 L 280 94 L 360 114 L 440 88 L 520 100 L 600 96 L 680 120 L 760 114"
               fill="none"
-              stroke="#67C23A"
+              stroke="#48CAE4"
               stroke-width="3"
               stroke-linecap="round"
               stroke-linejoin="round"
             />
 
             <!-- 数据2点 -->
-            <circle cx="120" cy="80" r="4" fill="#67C23A" />
-            <circle cx="200" cy="84" r="4" fill="#67C23A" />
-            <circle cx="280" cy="94" r="4" fill="#67C23A" />
-            <circle cx="360" cy="114" r="4" fill="#67C23A" />
-            <circle cx="440" cy="88" r="4" fill="#67C23A" />
-            <circle cx="520" cy="100" r="4" fill="#67C23A" />
-            <circle cx="600" cy="96" r="4" fill="#67C23A" />
-            <circle cx="680" cy="120" r="4" fill="#67C23A" />
-            <circle cx="760" cy="114" r="4" fill="#67C23A" />
+            <circle cx="120" cy="80" r="4" fill="#48CAE4" />
+            <circle cx="200" cy="84" r="4" fill="#48CAE4" />
+            <circle cx="280" cy="94" r="4" fill="#48CAE4" />
+            <circle cx="360" cy="114" r="4" fill="#48CAE4" />
+            <circle cx="440" cy="88" r="4" fill="#48CAE4" />
+            <circle cx="520" cy="100" r="4" fill="#48CAE4" />
+            <circle cx="600" cy="96" r="4" fill="#48CAE4" />
+            <circle cx="680" cy="120" r="4" fill="#48CAE4" />
+            <circle cx="760" cy="114" r="4" fill="#48CAE4" />
           </svg>
         </div>
       </div>
@@ -193,75 +215,116 @@
 
 <script setup>
 import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@element-plus/icons-vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+
+// 波形数据
+const speedPoints = ref('')
+const pitchPoints = ref('')
+const emotionPoints = ref('')
+let t = 0
+let timer = null
+
+function genWaveData() {
+  const N = 60
+  let speed = []
+  let pitch = []
+  let emotion = []
+  for (let i = 0; i < N; i++) {
+    const x = i * 10
+    speed.push(`${x},${60 + 30 * Math.sin((t + i) * 0.18)}`)
+    pitch.push(`${x},${60 + 30 * Math.sin((t + i) * 0.18 + 1.5)}`)
+    emotion.push(`${x},${60 + 30 * Math.sin((t + i) * 0.18 + 3)}`)
+  }
+  speedPoints.value = speed.join(' ')
+  pitchPoints.value = pitch.join(' ')
+  emotionPoints.value = emotion.join(' ')
+  t++
+}
+onMounted(() => {
+  genWaveData()
+  timer = setInterval(genWaveData, 80)
+})
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
 
 <style scoped lang="scss">
+:root {
+  --main-color: #4b5e7a;
+  --sub-color: #6c6f93;
+  --bg-color: #f5f6fa;
+  --card-color: #fff;
+  --btn-color: #4b5e7a;
+  --hover-bg: #e9ecf3;
+  --active-bg: #d6dbe9;
+  --gradient-main: linear-gradient(90deg, #4b5e7a 0%, #6c6f93 100%);
+  --gradient-orange: linear-gradient(135deg, #ff6b6b 0%, #ffa07a 100%);
+  --gradient-pink: linear-gradient(135deg, #ff69b4 0%, #ffb6c1 100%);
+  --gradient-cyan: linear-gradient(135deg, #48cae4 0%, #90e0ef 100%);
+  --gradient-purple: linear-gradient(135deg, #9b59b6 0%, #e8d5ff 100%);
+}
+.layout_main,
 .home-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-color);
   padding: 24px;
-  color: #333;
-  animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  overflow: auto;
 }
 
 .welcome-section {
   text-align: center;
   margin-bottom: 40px;
-  padding: 40px 0;
+  padding: 40px 24px;
+  background: var(--gradient-main);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(75, 94, 122, 0.15);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: float 6s ease-in-out infinite;
+  }
 
   .welcome-title {
     font-size: 2.5rem;
     font-weight: 700;
-    color: white;
+    // color: #fff;
     margin-bottom: 16px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
   }
-
   .welcome-subtitle {
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.9);
+    // color: rgba(255, 255, 255, 0.9);
     font-weight: 300;
+    position: relative;
+    z-index: 1;
   }
 }
 
 .features-section {
   margin-bottom: 40px;
-
   .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 24px;
     margin-bottom: 32px;
   }
-
   .feature-card {
-    background: white;
-    border-radius: 16px;
+    background: var(--card-color);
+    border-radius: 12px;
     padding: 32px 24px;
     text-align: center;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(75, 94, 122, 0.08);
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
@@ -287,12 +350,24 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
       left: 0;
       right: 0;
       height: 4px;
-      background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    }
+
+    &.text-to-speech::before {
+      background: var(--gradient-orange);
+    }
+    &.voice-cloning::before {
+      background: var(--gradient-pink);
+    }
+    &.voice-library::before {
+      background: var(--gradient-cyan);
+    }
+    &.learning-progress::before {
+      background: var(--gradient-purple);
     }
 
     &:hover {
       transform: translateY(-8px);
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 32px rgba(75, 94, 122, 0.12);
     }
 
     .card-icon {
@@ -303,74 +378,80 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
       align-items: center;
       justify-content: center;
       margin: 0 auto 20px;
-      color: white;
+      // color: #fff;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        animation: rotate 3s linear infinite;
+      }
     }
 
     h3 {
       font-size: 1.25rem;
       font-weight: 600;
       margin-bottom: 12px;
-      color: #2c3e50;
+      color: var(--main-color);
     }
-
     p {
-      color: #7f8c8d;
+      color: var(--sub-color);
       line-height: 1.6;
       font-size: 0.95rem;
     }
 
     &.text-to-speech .card-icon {
-      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      background: var(--gradient-orange);
     }
-
     &.voice-cloning .card-icon {
-      background: linear-gradient(135deg, #feca57, #ff9ff3);
+      background: var(--gradient-pink);
     }
-
     &.voice-library .card-icon {
-      background: linear-gradient(135deg, #48dbfb, #0abde3);
+      background: var(--gradient-cyan);
     }
-
     &.learning-progress .card-icon {
-      background: linear-gradient(135deg, #1dd1a1, #10ac84);
+      background: var(--gradient-purple);
     }
   }
 }
 
 .stats-section {
   margin-bottom: 40px;
-
   .stats-header {
     text-align: center;
     margin-bottom: 32px;
-
     h2 {
       font-size: 2rem;
       font-weight: 600;
-      color: white;
+      color: var(--main-color);
       margin-bottom: 8px;
     }
-
     p {
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--sub-color);
       font-size: 1rem;
     }
   }
-
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
   }
-
   .stat-card {
-    background: white;
-    border-radius: 12px;
+    background: var(--card-color);
+    border-radius: 10px;
     padding: 24px;
     text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 12px rgba(75, 94, 122, 0.08);
     transition: transform 0.3s ease;
     animation: slideInUp 0.6s ease-out;
+    position: relative;
+    overflow: hidden;
 
     &:nth-child(1) {
       animation-delay: 0.5s;
@@ -385,6 +466,28 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
       animation-delay: 0.8s;
     }
 
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    &:nth-child(1)::before {
+      background: var(--gradient-orange);
+    }
+    &:nth-child(2)::before {
+      background: var(--gradient-cyan);
+    }
+    &:nth-child(3)::before {
+      background: var(--gradient-pink);
+    }
+    &:nth-child(4)::before {
+      background: var(--gradient-purple);
+    }
+
     &:hover {
       transform: translateY(-4px);
     }
@@ -392,16 +495,27 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
     .stat-number {
       font-size: 2.5rem;
       font-weight: 700;
-      color: #2c3e50;
       margin-bottom: 8px;
     }
 
+    &:nth-child(1) .stat-number {
+      color: #ff6b6b;
+    }
+    &:nth-child(2) .stat-number {
+      color: #48cae4;
+    }
+    &:nth-child(3) .stat-number {
+      color: #ff69b4;
+    }
+    &:nth-child(4) .stat-number {
+      color: #9b59b6;
+    }
+
     .stat-label {
-      color: #7f8c8d;
+      color: var(--sub-color);
       font-size: 0.9rem;
       margin-bottom: 12px;
     }
-
     .stat-trend {
       display: flex;
       align-items: center;
@@ -409,78 +523,136 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
       gap: 4px;
       font-size: 0.85rem;
       font-weight: 500;
-
       &.positive {
-        color: #27ae60;
+        color: #4b5e7a;
       }
-
       &.negative {
-        color: #e74c3c;
+        color: #f56c6c;
       }
     }
   }
 }
 
+.waveform-section {
+  background: var(--card-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(75, 94, 122, 0.08);
+  margin-bottom: 40px;
+  padding: 32px 24px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-cyan);
+  }
+
+  .waveform-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--main-color);
+    }
+    .waveform-legend {
+      display: flex;
+      gap: 18px;
+      .legend {
+        font-size: 0.95rem;
+        font-weight: 500;
+        &.speed {
+          color: #ff6b6b;
+        }
+        &.pitch {
+          color: #48cae4;
+        }
+        &.emotion {
+          color: #ff69b4;
+        }
+      }
+    }
+  }
+  .waveform-card {
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 12px 0;
+    border: 1px solid #e9ecef;
+    .waveform-svg {
+      width: 100%;
+      height: 120px;
+      display: block;
+    }
+  }
+}
+
 .chart-section {
-  background: white;
-  border-radius: 16px;
+  background: var(--card-color);
+  border-radius: 12px;
   padding: 32px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  animation: slideInUp 0.6s ease-out;
-  animation-delay: 0.9s;
-  animation-fill-mode: both;
+  box-shadow: 0 4px 20px rgba(75, 94, 122, 0.08);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--gradient-purple);
+  }
 
   .chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 24px;
-
     h2 {
       font-size: 1.5rem;
       font-weight: 600;
-      color: #2c3e50;
+      color: var(--main-color);
     }
-
     .chart-legend {
       display: flex;
       gap: 20px;
-
       .legend-item {
         display: flex;
         align-items: center;
         gap: 8px;
         font-size: 0.9rem;
-        color: #7f8c8d;
-
+        color: var(--sub-color);
         .legend-color {
           width: 12px;
           height: 12px;
           border-radius: 2px;
-
           &.data1 {
-            background: #409eff;
+            background: #ff6b6b;
           }
-
           &.data2 {
-            background: #67c23a;
+            background: #48cae4;
           }
         }
       }
     }
   }
-
   .chart-container {
     height: 300px;
-    background: #f8f9fa;
+    background: var(--bg-color);
     border-radius: 8px;
     padding: 20px;
     border: 1px solid #e9ecef;
-
     .simple-chart {
       width: 100%;
       height: 100%;
-
       svg {
         width: 100%;
         height: 100%;
@@ -489,23 +661,60 @@ import { Microphone, UserFilled, FolderOpened, TrendCharts, ArrowUp } from '@ele
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 768px) {
   .home-container {
     padding: 16px;
   }
-
   .welcome-title {
     font-size: 2rem !important;
   }
-
   .features-grid {
     grid-template-columns: 1fr !important;
   }
-
   .stats-grid {
     grid-template-columns: repeat(2, 1fr) !important;
   }
-
   .chart-header {
     flex-direction: column;
     gap: 16px;

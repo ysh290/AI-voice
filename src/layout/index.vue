@@ -9,7 +9,7 @@
         </div>
         <div class="tabbar">
           <div class="tabbar_left">
-            <el-icon @click="isCollapse = !isCollapse">
+            <el-icon class="collapse-icon" @click="isCollapse = !isCollapse">
               <component :is="isCollapse ? 'Expand' : 'Fold'" />
             </el-icon>
             <el-breadcrumb class="breadcrumb" :separator-icon="ArrowRight">
@@ -18,10 +18,18 @@
             </el-breadcrumb>
           </div>
           <div class="tabbar_right">
-            <el-button type="primary" :icon="Refresh" circle />
-            <el-button type="primary" :icon="FullScreen" circle />
-            <el-button type="primary" :icon="Setting" circle />
-            <img src="@/assets/images/logo.jpg" style="width: 30px; margin: 0 15px" />
+            <el-button class="nav-btn" :icon="Refresh" circle />
+            <el-button class="nav-btn" :icon="FullScreen" circle />
+            <el-button class="nav-btn" :icon="Setting" circle />
+            <img
+              src="@/assets/images/logo.jpg"
+              style="
+                width: 30px;
+                margin: 0 15px;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+              "
+            />
             <el-dropdown>
               <span class="el-dropdown-link">
                 admin
@@ -40,52 +48,42 @@
           </div>
         </div>
       </el-header>
-      <el-container style="height: 100vh">
+      <el-container class="main-container">
         <!-- 左侧菜单 -->
         <el-aside class="layout_slider" :width="isCollapse ? '64px' : '200px'">
-          <!-- 滚动组件 -->
           <el-scrollbar class="scrollbar">
             <el-menu
               :router="true"
-              active-text-color="yellowgreen"
+              active-text-color="#4B5E7A"
               :default-active="route.path"
               :collapse="isCollapse"
               class="el-menu-vertical-demo"
             >
               <el-menu-item index="/layout/home">
                 <el-icon><location /></el-icon>
-                首页
+                <span>首页</span>
               </el-menu-item>
               <el-menu-item index="/layout/voiceCreate">
                 <el-icon><Position /></el-icon>
-                教学语音生成
+                <span>教学语音生成</span>
               </el-menu-item>
-              <!-- <el-sub-menu index="/acl">
-                <template #title>
-                  <el-icon><document /></el-icon>
-                  语音库
-                </template>
-                <el-menu-item index="/acl/user">用户管理</el-menu-item>
-                <el-menu-item index="/acl/role">角色管理</el-menu-item>
-                <el-menu-item index="/acl/permission">菜单管理</el-menu-item>
-              </el-sub-menu> -->
               <el-menu-item index="/layout/voiceDatabase">
                 <el-icon><document /></el-icon>
-                语音库
+                <span>语音库</span>
               </el-menu-item>
               <el-menu-item index="/layout/personalizedLearning">
                 <el-icon><Discount /></el-icon>
-                个性化学习支持
+                <span>个性化学习支持</span>
               </el-menu-item>
               <el-menu-item index="/layout/ai">
                 <el-icon><setting /></el-icon>
-                ai小助手
+                <span>ai小助手</span>
               </el-menu-item>
             </el-menu>
           </el-scrollbar>
         </el-aside>
         <!-- 内容展示区域 -->
-        <el-main class="layout_main">
+        <el-main class="layout_main" v-el-main-infinite-scroll>
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -96,69 +94,179 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowRight, FullScreen, Refresh, Setting } from '@element-plus/icons-vue'
-// 获取当前路由信息
 const route = useRoute()
-// console.log(route.path)
 const isCollapse = ref(false)
 </script>
 <style scoped lang="scss">
-// “justify” 管主轴，
-// “align-items” 管交叉轴，
-// 主轴方向看 flex-direction！
+:root {
+  --main-color: #4b5e7a;
+  --sub-color: #6c6f93;
+  --bg-color: #f5f6fa;
+  --card-color: #fff;
+  --btn-color: #4b5e7a;
+  --hover-bg: #e9ecf3;
+  --active-bg: #d6dbe9;
+  --gradient-main: linear-gradient(90deg, #4b5e7a 0%, #6c6f93 100%);
+}
 .layout_tabbar {
-  background-color: aquamarine;
+  background: var(--card-color);
   display: flex;
   width: 100%;
-  //0-25% 发生渐变 25-75% 颜色不变（形成“纯色带”） 75-100% 再次渐变
-  background-image: linear-gradient(to right, #ff9a9e 0%, #fad0c4 25%, #fad0c4 75%, #a18cd1 100%);
+  height: 56px;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(75, 94, 122, 0.06);
+  position: relative;
+  /* 渐变bar */
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4px;
+    background: var(--gradient-main);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    img {
+      height: 36px;
+      margin: 8px 10px 8px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    p {
+      color: var(--main-color);
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-left: 5px;
+      letter-spacing: 2px;
+    }
+  }
   .tabbar {
     display: flex;
-    // background-color: black;
     width: calc(100% - 200px);
-    //单行看 items，多行再看 content
     align-items: center;
     margin-left: 40px;
     justify-content: space-between;
     .tabbar_left {
       display: flex;
       align-items: center;
+      .collapse-icon {
+        color: var(--main-color);
+        font-size: 22px;
+        margin-right: 18px;
+        cursor: pointer;
+        transition: color 0.2s;
+        &:hover {
+          color: var(--sub-color);
+        }
+      }
       .breadcrumb {
         margin-left: 20px;
+        .el-breadcrumb__item {
+          color: var(--sub-color);
+        }
       }
     }
     .tabbar_right {
       display: flex;
       align-items: center;
-      .example-showcase .el-dropdown-link {
+      .nav-btn {
+        margin-right: 8px;
+        background: var(--main-color);
+        border: none;
+        color: #fff;
+        transition: background 0.2s;
+      }
+      .nav-btn:hover {
+        background: var(--gradient-main);
+        color: #fff;
+      }
+      .el-dropdown-link {
         cursor: pointer;
-        color: var(--el-color-primary);
+        color: var(--main-color);
         display: flex;
         align-items: center;
+        font-weight: 500;
       }
     }
   }
 }
 .layout_slider {
-  background-color: burlywood;
+  background: var(--card-color);
   width: 200px;
   height: 100vh;
+  box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
+  transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
+  overflow: hidden;
   .scrollbar {
-    height: calc(100vh - 60px);
+    height: calc(100vh - 56px);
+    padding-top: 12px;
+  }
+  .el-menu {
+    background: transparent;
+    border: none;
+    .el-menu-item {
+      border-radius: 6px;
+      margin: 6px 8px;
+      color: var(--main-color);
+      font-weight: 500;
+      transition:
+        background 0.2s,
+        color 0.2s;
+      &:hover {
+        background: var(--hover-bg);
+        color: var(--btn-color) !important;
+      }
+      &.is-active {
+        background: var(--gradient-main);
+        // color: #fff !important;
+        box-shadow: 0 2px 8px rgba(75, 94, 122, 0.08);
+      }
+      .el-icon {
+        font-size: 20px;
+      }
+    }
   }
 }
-.layout_main {
-  overflow: auto;
+.main-container {
+  background: var(--bg-color);
 }
-.logo {
-  align-content: center;
-  display: flex;
-  img {
-    height: 40px;
-    margin: 10px;
-  }
-  p {
-    margin: 20px;
-    margin-left: 5px;
+.common-layout {
+  height: 100vh; // 添加视口高度
+  display: flex; // 启用flex布局
+  flex-direction: column; // 垂直方向
+
+  .el-container {
+    flex: 1; // 填充剩余空间
+    overflow: hidden; // 防止外层滚动
+
+    .main-container {
+      height: 100%; // 填充父容器
+      display: flex; // 启用flex
+
+      .layout_main {
+        flex: 1; // 关键修改：填充剩余空间
+        min-height: 0; // 允许收缩
+        overflow-y: auto; // 启用滚动
+        padding: 24px;
+        margin: 0; // 移除外边距
+        border-radius: 16px;
+        box-shadow: 0 4px 24px rgba(75, 94, 122, 0.06);
+        box-sizing: border-box; // 包含内边距
+      }
+      /* 滚动条美化 */
+      .layout_main::-webkit-scrollbar {
+        width: 8px;
+      }
+      .layout_main::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+      }
+    }
   }
 }
 </style>
