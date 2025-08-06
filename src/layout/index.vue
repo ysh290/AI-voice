@@ -106,7 +106,7 @@ const isCollapse = ref(false)
   --btn-color: #4b5e7a;
   --hover-bg: #e9ecf3;
   --active-bg: #d6dbe9;
-  --gradient-main: linear-gradient(90deg, #4b5e7a 0%, #6c6f93 100%);
+  --gradient-main: linear-gradient(90deg, #020508 0%, #1b1d36 100%);
 }
 .layout_tabbar {
   background: var(--card-color);
@@ -200,7 +200,8 @@ const isCollapse = ref(false)
   // width: 200px;
   height: 100vh;
   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
-  transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
+  // transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);//开启会有动弹效果
+  transition: 0.1 ease;
   overflow: hidden;
   .scrollbar {
     height: calc(100vh - 56px);
@@ -211,23 +212,29 @@ const isCollapse = ref(false)
     border: none;
     .el-menu-item {
       border-radius: 6px;
-      margin: 6px 8px;
-      color: var(--main-color);
+      margin: 10px 8px;
+      height: 40px;
+      // color: var(--sub-color);
+      color:#6b6b6b;
       font-weight: 500;
       transition:
         background 0.2s,
         color 0.2s;
       &:hover {
-        background: var(--hover-bg);
-        color: var(--btn-color) !important;
+        // background: var(--main-color);
+        // color: var(--btn-color) !important;
+        background-color: #f4f4f4;
+        color:#1b1b1b
       }
       &.is-active {
-        background: var(--gradient-main);
-        // color: #fff !important;
-        box-shadow: 0 2px 8px rgba(75, 94, 122, 0.08);
+        // background: var(--gradient-main);
+        background:#f4f4f4;
+        color: #000000 ;
+        // box-shadow: 0 2px 8px rgba(75, 94, 122, 0.08);
       }
       .el-icon {
         font-size: 20px;
+        margin-left: 6px;//防止关闭侧边栏时文字突然消失
       }
     }
   }
