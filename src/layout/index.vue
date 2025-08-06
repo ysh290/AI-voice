@@ -98,14 +98,29 @@ const route = useRoute()
 const isCollapse = ref(false)
 </script>
 <style scoped lang="scss">
+// :root {
+//   --main-color: #4b5e7a;
+//   --sub-color: #6c6f93;
+//   --bg-color: #f5f6fa;
+//   --card-color: #fff;
+//   --btn-color: #4b5e7a;
+//   --hover-bg: #e9ecf3;
+//   --active-bg: #d6dbe9;
+//   --gradient-main: linear-gradient(90deg, #4b5e7a 0%, #6c6f93 100%);
+// }
 :root {
   --main-color: #4b5e7a;
   --sub-color: #6c6f93;
   --bg-color: #f5f6fa;
-  --card-color: #fff;
+  --card-color: #f9f9f9f9; // 稍微带点灰色，不是纯白
   --btn-color: #4b5e7a;
-  --hover-bg: #e9ecf3;
-  --active-bg: #d6dbe9;
+  --hover-bg: #d0e8ff; // 悬停时的背景颜色，更鲜艳的蓝色
+  --hover-color: #0056b3; // 悬停时的文字颜色，鲜艳的蓝色
+  --active-bg: #7bbdf9; // 激活时的背景颜色，更鲜艳的蓝色
+  --active-color: #004080; // 激活时的文字颜色，鲜艳的蓝色
+  --active-shadow: 0 4px 12px rgba(0, 64, 128, 0.2); // 激活时的阴影，增加层次感
+  --active-border: 2px solid #007bff; // 激活时的边框颜色
+  --active-icon-color: #007bff; // 激活时的图标颜色
   --gradient-main: linear-gradient(90deg, #4b5e7a 0%, #6c6f93 100%);
 }
 .layout_tabbar {
@@ -195,9 +210,45 @@ const isCollapse = ref(false)
     }
   }
 }
+// .layout_slider {
+//   background: var(--card-color);
+//   // width: 200px;
+//   height: 100vh;
+//   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
+//   transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
+//   overflow: hidden;
+//   .scrollbar {
+//     height: calc(100vh - 56px);
+//     padding-top: 12px;
+//   }
+//   .el-menu {
+//     background: transparent;
+//     border: none;
+//     .el-menu-item {
+//       border-radius: 6px;
+//       margin: 6px 8px;
+//       color: var(--main-color);
+//       font-weight: 500;
+//       transition:
+//         background 0.2s,
+//         color 0.2s;
+//       &:hover {
+//         background: var(--hover-bg);
+//         color: var(--btn-color) !important;
+//       }
+//       &.is-active {
+//         background: var(--gradient-main);
+//         // color: #fff !important;
+//         box-shadow: 0 2px 8px rgba(75, 94, 122, 0.08);
+//       }
+//       .el-icon {
+//         font-size: 20px;
+//       }
+//     }
+//   }
+// }
 .layout_slider {
   background: var(--card-color);
-  // width: 200px;
   height: 100vh;
   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
   transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
@@ -210,24 +261,59 @@ const isCollapse = ref(false)
     background: transparent;
     border: none;
     .el-menu-item {
-      border-radius: 6px;
-      margin: 6px 8px;
+      border-radius: 8px;
+      margin: 8px 10px;
       color: var(--main-color);
       font-weight: 500;
       transition:
-        background 0.2s,
-        color 0.2s;
+        background 0.3s,
+        color 0.3s,
+        box-shadow 0.3s,
+        border 0.3s,
+        transform 0.2s;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
       &:hover {
         background: var(--hover-bg);
-        color: var(--btn-color) !important;
+        color: var(--hover-color);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.12);
+        transform: translateX(4px) scale(1.03);
+        &::before {
+          opacity: 0.12;
+        }
       }
       &.is-active {
-        background: var(--gradient-main);
-        // color: #fff !important;
-        box-shadow: 0 2px 8px rgba(75, 94, 122, 0.08);
+        background: var(--active-bg);
+        color: var(--active-color);
+        box-shadow: var(--active-shadow);
+        border-left: 4px solid #007bff;
+        transform: scale(1.05);
+        &::before {
+          opacity: 0.18;
+        }
+        .el-icon {
+          color: var(--active-icon-color);
+          filter: drop-shadow(0 2px 8px #007bff33);
+          transition: color 0.3s, filter 0.3s;
+        }
       }
       .el-icon {
-        font-size: 20px;
+        font-size: 22px;
+        margin-right: 8px;
+        transition: color 0.3s, filter 0.3s;
+      }
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, #7bbdf9 0%, #d0e8ff 100%);
+        opacity: 0;
+        z-index: -1;
+        transition: opacity 0.3s;
       }
     }
   }
