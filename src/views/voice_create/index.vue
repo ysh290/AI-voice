@@ -15,6 +15,18 @@
           <span>{{ inputText.length }} / 5,000 characters</span>
           <span class="credit">9,864 credits remaining</span>
         </div>
+        <div class="bottom-bar">
+          <el-button
+            type="primary"
+            class="generate-btn"
+            :class="{ 'btn-disabled': !inputText }"
+            :disabled="!inputText"
+            @click="onGenerate"
+          >
+            <el-icon><Microphone /></el-icon>
+            {{ inputText ? 'Generate speech' : '请输入文本后生成语音' }}
+          </el-button>
+        </div>
       </div>
       <!-- 右侧参数设置区 -->
       <div class="settings-panel">
@@ -41,6 +53,16 @@
           </div>
         </div>
         <div class="settings-group">
+          <div class="settings-label">情感</div>
+          <el-select v-model="emotion" class="emotion-select" placeholder="选择情感">
+            <el-option label="中性" value="neutral" />
+            <el-option label="严肃" value="serious" />
+            <el-option label="轻松" value="relaxed" />
+            <el-option label="兴奋" value="excited" />
+            <el-option label="温柔" value="gentle" />
+          </el-select>
+        </div>
+        <div class="settings-group">
           <div class="slider-row">
             <span>语速</span>
             <el-slider
@@ -51,17 +73,6 @@
               style="flex: 1; margin: 0 12px"
             />
             <span>{{ speed }}</span>
-          </div>
-          <div class="slider-row">
-            <span>稳定性</span>
-            <el-slider
-              v-model="stability"
-              :min="0"
-              :max="1"
-              :step="0.01"
-              style="flex: 1; margin: 0 12px"
-            />
-            <span>{{ stability }}</span>
           </div>
           <div class="slider-row">
             <span>相似度</span>
@@ -75,14 +86,27 @@
             <span>{{ similarity }}</span>
           </div>
         </div>
+        <div class="settings-group">
+          <div class="settings-label">上传音频</div>
+          <el-upload
+            class="upload-demo"
+            drag
+            action="#"
+            :auto-upload="false"
+            :on-change="handleFileChange"
+            :show-file-list="false"
+          >
+            <el-icon class="el-icon--upload"><UploadFilled /></el-icon>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <template #tip>
+              <div class="el-upload__tip">支持 mp3/wav 格式，最大 10MB</div>
+            </template>
+          </el-upload>
+        </div>
       </div>
     </div>
     <!-- 底部操作栏 -->
-    <div class="bottom-bar">
-      <el-button type="primary" class="generate-btn" :disabled="!inputText" @click="onGenerate">
-        Generate speech
-      </el-button>
-    </div>
+
     <transition name="fade">
       <div v-if="audioUrl" class="audio-player-bar">
         <div class="audio-info">
@@ -98,9 +122,11 @@
 </template>
 <script setup>
 import { ref } from 'vue'
+import { Microphone, UploadFilled } from '@element-plus/icons-vue'
 const inputText = ref('')
 const voice = ref('Chris')
 const model = ref('v2')
+const emotion = ref('neutral')
 const speed = ref(1)
 const stability = ref(0.5)
 const similarity = ref(0.8)
@@ -110,6 +136,10 @@ function onGenerate() {
   setTimeout(() => {
     audioUrl.value = 'https://www.w3schools.com/html/horse.mp3'
   }, 1200)
+}
+function handleFileChange(file) {
+  console.log('上传文件:', file)
+  // 这里可以处理文件上传逻辑
 }
 </script>
 <style scoped lang="scss">
@@ -153,6 +183,7 @@ function onGenerate() {
     border-radius: 12px;
     box-shadow: 0 2px 12px rgba(75, 94, 122, 0.07);
     transition: box-shadow 0.3s;
+    // height: 500px;
     &:focus-within {
       box-shadow: 0 4px 20px #7bbdf9aa;
     }
@@ -166,6 +197,45 @@ function onGenerate() {
     .credit {
       color: #4b5e7a;
       font-weight: 500;
+    }
+  }
+  .bottom-bar {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 24px;
+    margin-top: 24px;
+    .generate-btn {
+      font-size: 1.1rem;
+      padding: 12px 32px;
+      border-radius: 24px;
+      background: var(--gradient-main);
+      border: none;
+      box-shadow: 0 2px 12px #7bbdf933;
+      transition:
+        background 0.3s,
+        box-shadow 0.3s,
+        transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      &:hover {
+        background: linear-gradient(90deg, #7bbdf9 0%, #4b5e7a 100%);
+        box-shadow: 0 4px 20px #7bbdf966;
+        transform: translateY(-2px) scale(1.04);
+      }
+      &.btn-disabled {
+        background: #f5f5f5;
+        color: #999;
+        cursor: not-allowed;
+        &:hover {
+          background: #f5f5f5;
+          box-shadow: 0 2px 12px #7bbdf933;
+          transform: none;
+        }
+      }
     }
   }
 }
@@ -193,7 +263,8 @@ function onGenerate() {
     margin-bottom: 12px;
     letter-spacing: 1px;
   }
-  .voice-select {
+  .voice-select,
+  .emotion-select {
     width: 100%;
   }
   .model-radio {
@@ -252,36 +323,18 @@ function onGenerate() {
       color: #4b5e7a;
     }
   }
-}
-.bottom-bar {
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 24px;
-  margin-bottom: 24px;
-  .generate-btn {
-    font-size: 1.1rem;
-    padding: 12px 32px;
-    border-radius: 24px;
-    background: var(--gradient-main);
-    border: none;
-    box-shadow: 0 2px 12px #7bbdf933;
-    transition:
-      background 0.3s,
-      box-shadow 0.3s,
-      transform 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    &:hover {
-      background: linear-gradient(90deg, #7bbdf9 0%, #4b5e7a 100%);
-      box-shadow: 0 4px 20px #7bbdf966;
-      transform: translateY(-2px) scale(1.04);
+  .upload-demo {
+    .el-upload__text {
+      color: var(--main-color);
+      font-size: 0.95rem;
+    }
+    .el-upload__tip {
+      color: var(--sub-color);
+      font-size: 0.9rem;
     }
   }
 }
+
 .audio-player-bar {
   width: 100%;
   max-width: 1100px;

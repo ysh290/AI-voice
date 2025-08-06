@@ -251,7 +251,7 @@ const isCollapse = ref(false)
   background: var(--card-color);
   height: 100vh;
   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
-  // transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);//开启会有动弹效果
+  transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1); //开启会有动弹效果
   transition: 0.1 ease;
   overflow: hidden;
   .scrollbar {
@@ -272,9 +272,11 @@ const isCollapse = ref(false)
         box-shadow 0.3s,
         border 0.3s,
         transform 0.2s;
+
       position: relative;
       z-index: 1;
       overflow: hidden;
+
       &:hover {
         background: var(--hover-bg);
         color: var(--hover-color);
