@@ -251,7 +251,8 @@ const isCollapse = ref(false)
   background: var(--card-color);
   height: 100vh;
   box-shadow: 2px 0 12px rgba(75, 94, 122, 0.06);
-  transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);
+  // transition: width 0.3s cubic-bezier(0.4, 2, 0.6, 1);//开启会有动弹效果
+  transition: 0.1 ease;
   overflow: hidden;
   .scrollbar {
     height: calc(100vh - 56px);
@@ -295,13 +296,17 @@ const isCollapse = ref(false)
         .el-icon {
           color: var(--active-icon-color);
           filter: drop-shadow(0 2px 8px #007bff33);
-          transition: color 0.3s, filter 0.3s;
+          transition:
+            color 0.3s,
+            filter 0.3s;
         }
       }
       .el-icon {
         font-size: 22px;
         margin-right: 8px;
-        transition: color 0.3s, filter 0.3s;
+        transition:
+          color 0.3s,
+          filter 0.3s;
       }
       &::before {
         content: '';
