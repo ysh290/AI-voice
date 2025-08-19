@@ -75,10 +75,24 @@
                 <el-icon><Discount /></el-icon>
                 <span>个性化学习支持</span>
               </el-menu-item>
-              <el-menu-item index="/layout/ai">
+              <el-sub-menu index="/layout">
+                <template #title>
+                  <el-icon><ChatDotRound /></el-icon>
+                  <span>AI小助手</span>
+                </template>
+                <el-menu-item index="/ai/qa">
+                  <el-icon><ChatDotRound /></el-icon>
+                  <span>AI问答</span>
+                </el-menu-item>
+                <el-menu-item index="/ai/history">
+                  <el-icon><Clock /></el-icon>
+                  <span>问答历史</span>
+                </el-menu-item>
+              </el-sub-menu>
+              <!-- <el-menu-item index="/layout/ai">
                 <el-icon><setting /></el-icon>
                 <span>ai小助手</span>
-              </el-menu-item>
+              </el-menu-item> -->
             </el-menu>
           </el-scrollbar>
         </el-aside>
@@ -93,7 +107,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { ArrowRight, FullScreen, Refresh, Setting } from '@element-plus/icons-vue'
+import {
+  ArrowRight,
+  FullScreen,
+  Refresh,
+  Setting,
+  ChatDotRound,
+  Clock,
+} from '@element-plus/icons-vue'
 const route = useRoute()
 const isCollapse = ref(false)
 </script>
@@ -258,6 +279,7 @@ const isCollapse = ref(false)
     height: calc(100vh - 56px);
     padding-top: 12px;
   }
+  //移除Element UI默认的菜单边框
   .el-menu {
     background: transparent;
     border: none;
@@ -321,6 +343,93 @@ const isCollapse = ref(false)
         opacity: 0;
         z-index: -1;
         transition: opacity 0.3s;
+      }
+    }
+
+    .el-sub-menu {
+      .el-sub-menu__title {
+        border-radius: 8px;
+        margin: 8px 10px;
+        padding: 10px;
+        color: var(--main-color);
+        font-weight: 500;
+        transition:
+          background 0.3s,
+          color 0.3s,
+          box-shadow 0.3s,
+          border 0.3s,
+          transform 0.2s;
+
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+
+        &:hover {
+          background: var(--hover-bg);
+          color: var(--hover-color);
+          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.12);
+          transform: translateX(4px) scale(1.03);
+          &::before {
+            opacity: 0.12;
+          }
+        }
+        &.is-active {
+          background: var(--active-bg);
+          color: var(--active-color);
+          box-shadow: var(--active-shadow);
+          border-left: 4px solid #007bff;
+          transform: scale(1.05);
+          &::before {
+            opacity: 0.18;
+          }
+          .el-icon {
+            color: var(--active-icon-color);
+            filter: drop-shadow(0 2px 8px #007bff33);
+            transition:
+              color 0.3s,
+              filter 0.3s;
+          }
+        }
+        .el-icon {
+          font-size: 22px;
+          margin-right: 8px;
+          transition:
+            color 0.3s,
+            filter 0.3s;
+        }
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, #7bbdf9 0%, #d0e8ff 100%);
+          opacity: 0;
+          z-index: -1;
+          transition: opacity 0.3s;
+        }
+      }
+
+      .el-menu-item {
+        margin-left: 20px;
+        margin-right: 10px;
+        border-radius: 6px;
+        font-size: 14px;
+
+        &:hover {
+          background: var(--hover-bg);
+          color: var(--hover-color);
+          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.12);
+          transform: translateX(4px) scale(1.03);
+        }
+        &.is-active {
+          background: var(--active-bg);
+          color: var(--active-color);
+          box-shadow: var(--active-shadow);
+          border-left: 3px solid #007bff;
+          transform: scale(1.05);
+        }
       }
     }
   }

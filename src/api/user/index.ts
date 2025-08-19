@@ -22,7 +22,7 @@ export const reqLogin = (data: loginForm) => {
 //     data: { },
 //   })
 // }
-// 相当于export function reqLogin(data: any) {
+// 还相当于export function reqLogin(data: any) {
 //   return request.post(API.LOGIN_URL, data)
 // }
 

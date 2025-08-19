@@ -49,10 +49,23 @@ const router = createRouter({
           name: 'personalizedLearning',
           component: () => import('@/views/personalized_learning/index.vue'),
         },
+      ],
+    },
+    {
+      path: '/ai',
+      name: 'ai',
+      component: () => import('@/layout/index.vue'),
+      children: [
+        //问答功能
         {
-          path: 'ai',
-          name: 'ai',
-          component: () => import('@/views/ai/index.vue'),
+          path: 'qa',
+          name: 'qa',
+          component: () => import('@/views/ai/ai_question_answer/index.vue'),
+        },
+        {
+          path: 'history',
+          name: 'history',
+          component: () => import('@/views/ai/ai_history/index.vue'),
         },
       ],
     },

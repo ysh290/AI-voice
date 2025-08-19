@@ -3,12 +3,12 @@
     <div class="voice-create-main">
       <!-- 左侧文本输入区 -->
       <div class="input-panel">
-        <div class="input-tip">在此开始输入或粘贴您希望转换成语音的任何文本...</div>
+        <!-- <div class="input-tip">在此开始输入或粘贴您希望转换成语音的任何文本...</div> -->
         <el-input
           v-model="inputText"
           type="textarea"
-          :rows="14"
-          placeholder=""
+          :rows="21"
+          placeholder="在此开始输入或粘贴您希望转换成语音的任何文本..."
           class="main-input"
         />
         <div class="credit-info">
@@ -106,7 +106,7 @@
       </div>
     </div>
     <!-- 底部操作栏 -->
-
+    <!-- <transition>组件用于给元素或组件添加进入/离开的过渡效果。 -->
     <transition name="fade">
       <div v-if="audioUrl" class="audio-player-bar">
         <div class="audio-info">
@@ -114,15 +114,41 @@
           <span class="audio-voice">Chris · Created 现在</span>
         </div>
         <audio :src="audioUrl" controls style="width: 320px; vertical-align: middle" />
-        <el-button icon="el-icon-share" circle size="small" class="audio-btn" />
-        <el-button icon="el-icon-download" circle size="small" class="audio-btn" />
+        <el-button :icon="Share" circle size="small" class="audio-btn" />
+        <el-button :icon="Download" circle size="small" class="audio-btn" />
+        <el-button
+          icon="el-icon-close"
+          circle
+          size="small"
+          class="close-btn"
+          @click="closeAudioPlayer"
+          title="关闭播放器"
+        >
+          <el-icon><CloseBold /></el-icon>
+        </el-button>
+      </div>
+    </transition>
+
+    <!-- 重新打开音频播放器按钮 -->
+    <transition name="fade">
+      <div v-if="!audioUrl && hasGeneratedAudio" class="reopen-audio-btn">
+        <el-button
+          type="primary"
+          circle
+          size="large"
+          class="reopen-btn"
+          @click="reopenAudioPlayer"
+          title="重新打开音频播放器"
+        >
+          <el-icon><VideoPlay /></el-icon>
+        </el-button>
       </div>
     </transition>
   </div>
 </template>
 <script setup>
 import { ref } from 'vue'
-import { Microphone, UploadFilled } from '@element-plus/icons-vue'
+import { Microphone, UploadFilled, VideoPlay, Share, Download } from '@element-plus/icons-vue'
 const inputText = ref('')
 const voice = ref('Chris')
 const model = ref('v2')
@@ -131,15 +157,26 @@ const speed = ref(1)
 const stability = ref(0.5)
 const similarity = ref(0.8)
 const audioUrl = ref('')
+const hasGeneratedAudio = ref(false)
+//这里可以处理生成音频逻辑
 function onGenerate() {
   audioUrl.value = ''
   setTimeout(() => {
     audioUrl.value = 'https://www.w3schools.com/html/horse.mp3'
+    hasGeneratedAudio.value = true
   }, 1200)
 }
 function handleFileChange(file) {
   console.log('上传文件:', file)
   // 这里可以处理文件上传逻辑
+}
+
+function closeAudioPlayer() {
+  audioUrl.value = ''
+}
+
+function reopenAudioPlayer() {
+  audioUrl.value = 'https://www.w3schools.com/html/horse.mp3'
 }
 </script>
 <style scoped lang="scss">
@@ -151,6 +188,7 @@ function handleFileChange(file) {
   align-items: center;
   padding: 40px 0 0 0;
   animation: fadeIn 0.7s;
+  position: relative;
 }
 .voice-create-main {
   display: flex;
@@ -211,7 +249,7 @@ function handleFileChange(file) {
       font-size: 1.1rem;
       padding: 12px 32px;
       border-radius: 24px;
-      background: var(--gradient-main);
+      background: linear-gradient(90deg, #7bbdf9 0%, #4b5e7a 100%);
       border: none;
       box-shadow: 0 2px 12px #7bbdf933;
       transition:
@@ -221,11 +259,13 @@ function handleFileChange(file) {
       display: flex;
       align-items: center;
       gap: 8px;
+      // & 是一个特殊的符号，用于引用父级选择器
       &:hover {
         background: linear-gradient(90deg, #7bbdf9 0%, #4b5e7a 100%);
         box-shadow: 0 4px 20px #7bbdf966;
         transform: translateY(-2px) scale(1.04);
       }
+      // 你希望在它被禁用时（即同时具有 .btn-disabled 类）应用特定的样式
       &.btn-disabled {
         background: #f5f5f5;
         color: #999;
@@ -336,17 +376,21 @@ function handleFileChange(file) {
 }
 
 .audio-player-bar {
-  width: 100%;
-  max-width: 1100px;
+  position: fixed;
+  width: calc(80vw - 150px);
+  margin: auto; /* 水平居中 */
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 2px 12px #7bbdf933;
+  box-shadow: 0 8px 32px rgba(75, 94, 122, 0.15);
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 16px 24px;
-  margin-bottom: 18px;
-  animation: fadeIn 0.7s;
+  z-index: 1000;
+  animation: slideInUp 0.5s ease-out;
   .audio-info {
     flex: 1;
     display: flex;
@@ -364,7 +408,41 @@ function handleFileChange(file) {
   .audio-btn {
     margin-left: 4px;
   }
+  .close-btn {
+    margin-left: 8px;
+    background: #f5f5f5;
+    border: none;
+    color: #999;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #ff4757;
+      color: white;
+      transform: scale(1.1);
+    }
+  }
 }
+
+.reopen-audio-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999;
+
+  .reopen-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+  }
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
