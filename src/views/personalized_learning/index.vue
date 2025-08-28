@@ -73,15 +73,67 @@
         </transition-group>
       </div>
     </el-card>
-    <!-- 个性化语音参数推荐 -->
-    <el-card class="pl-card param-card" shadow="hover">
-      <div class="pl-title">智能语音参数推荐</div>
-      <div class="param-list">
-        <div v-for="(item, idx) in recommendParams" :key="idx" class="param-item">
-          <span class="param-label">{{ item.label }}：</span>
-          <el-tag :type="item.type">{{ item.value }}</el-tag>
-        </div>
+    <!-- 个性化语音参数推荐（核心功能） -->
+    <el-card class="pl-card param-card core-card" shadow="hover">
+      <div class="core-head">
+        <div class="pl-title">智能语音参数推荐</div>
+        <el-tag class="core-badge" type="danger" effect="dark"><span class="pulse-dot"></span>核心功能</el-tag>
       </div>
+      <div class="profile-form">
+        <el-form :inline="false" label-width="94px" class="form-body">
+          <div class="form-grid">
+            <el-form-item label="性别">
+              <el-radio-group v-model="profile.gender">
+                <el-radio-button label="female">女</el-radio-button>
+                <el-radio-button label="male">男</el-radio-button>
+                <el-radio-button label="neutral">中性</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="年龄">
+              <el-input-number v-model="profile.age" :min="3" :max="80" :step="1" />
+            </el-form-item>
+            <el-form-item label="认知水平">
+              <el-select v-model="profile.cognition" placeholder="选择认知水平">
+                <el-option label="基础" value="low" />
+                <el-option label="一般" value="mid" />
+                <el-option label="较高" value="high" />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="学习节奏">
+              <el-select v-model="profile.pace" placeholder="选择学习节奏">
+                <el-option label="慢节奏" value="slow" />
+                <el-option label="适中" value="medium" />
+                <el-option label="快节奏" value="fast" />
+              </el-select>
+            </el-form-item>
+          </div>
+          <div class="form-actions">
+            <el-button type="primary" size="large" :loading="isGenerating" @click="generateRecommendations">
+              {{ isGenerating ? '生成中...' : '生成推荐' }}
+            </el-button>
+            <span class="hint">根据学习者画像生成更贴合的语音参数</span>
+          </div>
+        </el-form>
+      </div>
+      <el-divider />
+      <div v-if="isGenerating" class="generating">
+        <el-progress :percentage="genProgress" type="dashboard" :width="160" :stroke-width="10" />
+        <div class="gen-text">正在为你计算个性化参数...</div>
+      </div>
+      <transition-group name="param-fade" tag="div" class="param-grid" v-else>
+        <div v-for="(item, idx) in recommendParams" :key="item.label + idx" class="param-card-item">
+          <div class="param-icon" :class="'t-' + item.type">
+            <el-icon v-if="item.label.includes('语速')"><MagicStick /></el-icon>
+            <el-icon v-else-if="item.label.includes('情感')"><EditPen /></el-icon>
+            <el-icon v-else-if="item.label.includes('音色')"><Microphone /></el-icon>
+            <el-icon v-else><DataAnalysis /></el-icon>
+          </div>
+          <div class="param-content">
+            <div class="param-title">{{ item.label }}</div>
+            <el-tag :type="item.type" effect="light">{{ item.value }}</el-tag>
+          </div>
+        </div>
+      </transition-group>
       <transition name="fade">
         <div v-if="recommendDesc" class="recommend-desc">{{ recommendDesc }}</div>
       </transition>
@@ -90,7 +142,7 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue'
-import { Clock, DataAnalysis, EditPen } from '@element-plus/icons-vue'
+import { Clock, DataAnalysis, EditPen, MagicStick, Microphone } from '@element-plus/icons-vue'
 const students = [
   {
     id: 1,
@@ -173,35 +225,75 @@ function getProgressColor(val) {
 function onStudentChange() {
   // 可扩展：切换学生时动画或提示
 }
-const recommendParams = computed(() => {
-  const stu = currentStudent.value
-  // 简单规则：高正确率推荐正常语速和中性音色，低答题率推荐慢速和轻松情感
-  if (stu.accuracy > 80 && stu.answerRate > 80) {
-    return [
-      { label: '推荐语速', value: '正常', type: 'success' },
-      { label: '推荐情感', value: '中性', type: 'primary' },
-      { label: '推荐音色', value: '标准', type: 'info' },
+// 学习者画像与个性化推荐
+const profile = ref({ gender: 'female', age: 12, cognition: 'mid', pace: 'medium' })
+const recommendParams = ref([])
+const recommendDesc = ref('')
+const isGenerating = ref(false)
+const genProgress = ref(0)
+
+function animateProgress(doneCb) {
+  genProgress.value = 0
+  const timer = setInterval(() => {
+    genProgress.value += Math.floor(5 + Math.random() * 12)
+    if (genProgress.value >= 100) {
+      genProgress.value = 100
+      clearInterval(timer)
+      doneCb && doneCb()
+    }
+  }, 120)
+}
+
+function generateRecommendations() {
+  if (isGenerating.value) return
+  isGenerating.value = true
+  animateProgress(() => {
+    const g = profile.value.gender
+    const age = Number(profile.value.age)
+    const cog = profile.value.cognition
+    const pace = profile.value.pace
+
+    // 基础规则
+    let speed = '适中'
+    let emotion = '积极'
+    let timbre = '自然'
+    let pause = '正常停顿'
+
+    if (age <= 8 || cog === 'low') {
+      speed = '慢速'
+      emotion = '亲切'
+      timbre = '温和'
+      pause = '较长停顿'
+    } else if (age >= 16 && cog === 'high') {
+      speed = '偏快'
+      emotion = '中性'
+      timbre = '标准'
+      pause = '短停顿'
+    }
+
+    // 性别影响音色
+    if (g === 'male') timbre = '稳重'
+    if (g === 'female') timbre = '清亮'
+
+    // 学习节奏偏好微调语速
+    if (pace === 'slow') speed = '慢速'
+    if (pace === 'fast') speed = (speed === '慢速' ? '适中' : '偏快')
+
+    recommendParams.value = [
+      { label: '推荐语速', value: speed, type: speed === '慢速' ? 'warning' : speed === '偏快' ? 'primary' : 'success' },
+      { label: '推荐情感', value: emotion, type: emotion === '中性' ? 'info' : 'success' },
+      { label: '推荐音色', value: timbre, type: 'info' },
+      { label: '停顿策略', value: pause, type: 'primary' },
     ]
-  } else if (stu.answerRate < 70) {
-    return [
-      { label: '推荐语速', value: '慢速', type: 'warning' },
-      { label: '推荐情感', value: '轻松', type: 'info' },
-      { label: '推荐音色', value: '温和', type: 'success' },
-    ]
-  } else {
-    return [
-      { label: '推荐语速', value: '适中', type: 'primary' },
-      { label: '推荐情感', value: '积极', type: 'success' },
-      { label: '推荐音色', value: '自然', type: 'info' },
-    ]
-  }
-})
-const recommendDesc = computed(() => {
-  const stu = currentStudent.value
-  if (stu.accuracy > 80 && stu.answerRate > 80) return '学习表现优异，建议保持当前语音参数。'
-  if (stu.answerRate < 70) return '答题率偏低，建议语速放慢、情感轻松，音色温和以减轻学习压力。'
-  return '建议适中语速，积极情感，自然音色，助力持续进步。'
-})
+
+    const cogText = cog === 'low' ? '基础' : cog === 'mid' ? '一般' : '较高'
+    const paceText = pace === 'slow' ? '慢节奏' : pace === 'fast' ? '快节奏' : '适中节奏'
+    const genderText = g === 'male' ? '男' : g === 'female' ? '女' : '中性'
+    recommendDesc.value = `已根据性别（${genderText}）、年龄（${age}），认知水平（${cogText}）与学习节奏（${paceText}）生成个性化语音参数，旨在提高专注度与理解力。`
+
+    isGenerating.value = false
+  })
+}
 </script>
 <style scoped lang="scss">
 .pl-root {
@@ -297,6 +389,39 @@ const recommendDesc = computed(() => {
   .pl-title {
     margin-bottom: 16px;
   }
+  .core-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .core-badge {
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .profile-form {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .form-body {
+    width: 100%;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(260px, 1fr));
+    gap: 14px 24px;
+  }
+  .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    .hint {
+      color: var(--sub-color);
+      font-size: 0.92rem;
+    }
+  }
   .param-list {
     display: flex;
     flex-direction: column;
@@ -317,6 +442,80 @@ const recommendDesc = computed(() => {
     font-size: 0.98rem;
     animation: fadeIn 0.8s;
   }
+}
+/* 提升核心卡片视觉权重 */
+.core-card {
+  border: 2px solid #ecf5ff;
+  box-shadow: 0 8px 28px rgba(64, 158, 255, 0.12);
+}
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 16px;
+}
+.param-card-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.param-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(64, 158, 255, 0.12);
+}
+.param-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5ff;
+}
+.param-icon.t-success { background: #f0f9eb; }
+.param-icon.t-primary { background: #ecf5ff; }
+.param-icon.t-info { background: #f4f4f5; }
+.param-icon.t-warning { background: #fdf6ec; }
+.param-title {
+  font-weight: 600;
+  color: var(--main-color);
+  margin-bottom: 4px;
+}
+.generating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 0 6px 0;
+}
+.gen-text { color: var(--sub-color); }
+.core-badge .pulse-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: #f56c6c;
+  border-radius: 50%;
+  margin-right: 6px;
+  box-shadow: 0 0 0 0 rgba(245,108,108,0.6);
+  animation: pulse 1.8s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(245,108,108,0.6); }
+  70% { box-shadow: 0 0 0 10px rgba(245,108,108,0); }
+  100% { box-shadow: 0 0 0 0 rgba(245,108,108,0); }
+}
+.param-fade-enter-active, .param-fade-leave-active {
+  transition: all .35s ease;
+}
+.param-fade-enter-from, .param-fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px) scale(0.98);
 }
 .activity-list {
   display: flex;

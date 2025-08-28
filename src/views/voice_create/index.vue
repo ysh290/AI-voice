@@ -377,7 +377,7 @@ function reopenAudioPlayer() {
 
 .audio-player-bar {
   position: fixed;
-  width: calc(80vw - 150px);
+  width: calc(8·0vw - 150px);
   margin: auto; /* 水平居中 */
   bottom: 20px;
   left: 20px;
