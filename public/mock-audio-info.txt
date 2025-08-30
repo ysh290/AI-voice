@@ -1,0 +1,23 @@
+演示音频文件说明
+
+由于无法直接创建真实的音频文件，这里提供一些建议：
+
+1. 可以放置真实的音频文件：
+   - mock-generated-audio.mp3
+   - mock-audio-1.mp3
+   - mock-audio-2.mp3
+   - mock-audio-3.mp3
+
+2. 或者使用在线音频文件URL：
+   - 将audioUrl设置为在线音频文件的URL
+   - 例如：https://example.com/audio/sample.mp3
+
+3. 声谱图文件：
+   - mock-spectrogram.png
+   - 可以使用任何图片文件作为占位符
+
+4. 在开发环境中，可以：
+   - 使用浏览器的开发者工具模拟音频播放
+   - 或者暂时注释掉音频播放相关的代码
+
+注意：当前页面使用模拟数据，实际使用时需要配置真实的音频文件。

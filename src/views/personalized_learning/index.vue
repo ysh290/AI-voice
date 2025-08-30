@@ -77,7 +77,9 @@
     <el-card class="pl-card param-card core-card" shadow="hover">
       <div class="core-head">
         <div class="pl-title">智能语音参数推荐</div>
-        <el-tag class="core-badge" type="danger" effect="dark"><span class="pulse-dot"></span>核心功能</el-tag>
+        <!-- <el-tag class="core-badge" type="danger" effect="dark"
+          ><span class="pulse-dot"></span>核心功能</el-tag
+        > -->
       </div>
       <div class="profile-form">
         <el-form :inline="false" label-width="94px" class="form-body">
@@ -108,7 +110,12 @@
             </el-form-item>
           </div>
           <div class="form-actions">
-            <el-button type="primary" size="large" :loading="isGenerating" @click="generateRecommendations">
+            <el-button
+              type="primary"
+              size="large"
+              :loading="isGenerating"
+              @click="generateRecommendations"
+            >
               {{ isGenerating ? '生成中...' : '生成推荐' }}
             </el-button>
             <span class="hint">根据学习者画像生成更贴合的语音参数</span>
@@ -277,10 +284,14 @@ function generateRecommendations() {
 
     // 学习节奏偏好微调语速
     if (pace === 'slow') speed = '慢速'
-    if (pace === 'fast') speed = (speed === '慢速' ? '适中' : '偏快')
+    if (pace === 'fast') speed = speed === '慢速' ? '适中' : '偏快'
 
     recommendParams.value = [
-      { label: '推荐语速', value: speed, type: speed === '慢速' ? 'warning' : speed === '偏快' ? 'primary' : 'success' },
+      {
+        label: '推荐语速',
+        value: speed,
+        type: speed === '慢速' ? 'warning' : speed === '偏快' ? 'primary' : 'success',
+      },
       { label: '推荐情感', value: emotion, type: emotion === '中性' ? 'info' : 'success' },
       { label: '推荐音色', value: timbre, type: 'info' },
       { label: '停顿策略', value: pause, type: 'primary' },
@@ -299,7 +310,7 @@ function generateRecommendations() {
 .pl-root {
   min-height: 100vh;
   background: var(--bg-color);
-  padding: 40px 0 0 0;
+  padding: 20px 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -461,8 +472,10 @@ function generateRecommendations() {
   border: 1px solid #eef2f7;
   border-radius: 12px;
   padding: 12px 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .param-card-item:hover {
   transform: translateY(-2px);
@@ -477,10 +490,18 @@ function generateRecommendations() {
   justify-content: center;
   background: #f1f5ff;
 }
-.param-icon.t-success { background: #f0f9eb; }
-.param-icon.t-primary { background: #ecf5ff; }
-.param-icon.t-info { background: #f4f4f5; }
-.param-icon.t-warning { background: #fdf6ec; }
+.param-icon.t-success {
+  background: #f0f9eb;
+}
+.param-icon.t-primary {
+  background: #ecf5ff;
+}
+.param-icon.t-info {
+  background: #f4f4f5;
+}
+.param-icon.t-warning {
+  background: #fdf6ec;
+}
 .param-title {
   font-weight: 600;
   color: var(--main-color);
@@ -494,7 +515,9 @@ function generateRecommendations() {
   gap: 10px;
   padding: 10px 0 6px 0;
 }
-.gen-text { color: var(--sub-color); }
+.gen-text {
+  color: var(--sub-color);
+}
 .core-badge .pulse-dot {
   display: inline-block;
   width: 6px;
@@ -502,18 +525,26 @@ function generateRecommendations() {
   background: #f56c6c;
   border-radius: 50%;
   margin-right: 6px;
-  box-shadow: 0 0 0 0 rgba(245,108,108,0.6);
+  box-shadow: 0 0 0 0 rgba(245, 108, 108, 0.6);
   animation: pulse 1.8s infinite;
 }
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(245,108,108,0.6); }
-  70% { box-shadow: 0 0 0 10px rgba(245,108,108,0); }
-  100% { box-shadow: 0 0 0 0 rgba(245,108,108,0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(245, 108, 108, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 108, 108, 0);
+  }
 }
-.param-fade-enter-active, .param-fade-leave-active {
-  transition: all .35s ease;
+.param-fade-enter-active,
+.param-fade-leave-active {
+  transition: all 0.35s ease;
 }
-.param-fade-enter-from, .param-fade-leave-to {
+.param-fade-enter-from,
+.param-fade-leave-to {
   opacity: 0;
   transform: translateY(10px) scale(0.98);
 }

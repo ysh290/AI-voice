@@ -89,6 +89,10 @@
                   <span>问答历史</span>
                 </el-menu-item>
               </el-sub-menu>
+              <el-menu-item index="/layout/test">
+                <el-icon><Pear /></el-icon>
+                <span>test</span>
+              </el-menu-item>
               <!-- <el-menu-item index="/layout/ai">
                 <el-icon><setting /></el-icon>
                 <span>ai小助手</span>
@@ -114,6 +118,7 @@ import {
   Setting,
   ChatDotRound,
   Clock,
+  Pear,
 } from '@element-plus/icons-vue'
 const route = useRoute()
 const isCollapse = ref(false)
@@ -285,7 +290,7 @@ const isCollapse = ref(false)
     border: none;
     .el-menu-item {
       border-radius: 8px;
-      margin: 8px 10px;
+      margin: 8px 5px;
       color: var(--main-color);
       font-weight: 500;
       transition:
@@ -347,6 +352,8 @@ const isCollapse = ref(false)
     }
 
     .el-sub-menu {
+      margin: 5px;
+      font-weight: 500;
       .el-sub-menu__title {
         border-radius: 8px;
         margin: 8px 10px;
@@ -412,7 +419,7 @@ const isCollapse = ref(false)
       }
 
       .el-menu-item {
-        margin-left: 20px;
+        margin-left: 0px;
         margin-right: 10px;
         border-radius: 6px;
         font-size: 14px;

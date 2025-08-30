@@ -31,11 +31,11 @@
       <!-- 右侧参数设置区 -->
       <div class="settings-panel">
         <div class="settings-group">
-          <div class="settings-label">Voice</div>
-          <el-select v-model="voice" class="voice-select">
-            <el-option label="Chris" value="Chris" />
-            <el-option label="Emma" value="Emma" />
-            <el-option label="Alex" value="Alex" />
+          <div class="settings-label">选择语言</div>
+          <el-select v-model="language" class="language-select">
+            <el-option label="中文" value="中文" />
+            <el-option label="English" value="English" />
+            <el-option label="にほんご" value="にほんご" />
           </el-select>
         </div>
         <div class="settings-group">
@@ -150,7 +150,7 @@
 import { ref } from 'vue'
 import { Microphone, UploadFilled, VideoPlay, Share, Download } from '@element-plus/icons-vue'
 const inputText = ref('')
-const voice = ref('Chris')
+const language = ref('中文')
 const model = ref('v2')
 const emotion = ref('neutral')
 const speed = ref(1)
@@ -186,7 +186,7 @@ function reopenAudioPlayer() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 0 0 0;
+  padding: 15px 0 0 0;
   animation: fadeIn 0.7s;
   position: relative;
 }
@@ -303,7 +303,7 @@ function reopenAudioPlayer() {
     margin-bottom: 12px;
     letter-spacing: 1px;
   }
-  .voice-select,
+  .language-select,
   .emotion-select {
     width: 100%;
   }

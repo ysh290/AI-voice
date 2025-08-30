@@ -2,12 +2,18 @@
   <div class="voice-db-root">
     <div class="voice-db-card">
       <div class="voice-db-filters">
-        <el-input v-model="search" placeholder="搜索语音名称" class="filter-input" clearable />
-        <el-select v-model="course" placeholder="全部课程" class="filter-select">
+        <el-input v-model="search" placeholder="搜索学生名称" class="filter-input" clearable />
+        <el-select v-model="course" placeholder="全部语音名称" class="filter-select">
+          <el-option label="全部语音" value="" />
+          <el-option label="数学函数讲解" value="数学函数讲解" />
+          <el-option label="英语单词发音" value="英语单词发音" />
+        </el-select>
+        <!-- <el-input v-model="search" placeholder="搜索语音名称" class="filter-input" clearable /> -->
+        <!-- <el-select v-model="course" placeholder="全部课程" class="filter-select">
           <el-option label="全部课程" value="" />
           <el-option label="高等数学" value="高等数学" />
           <el-option label="大学英语" value="大学英语" />
-        </el-select>
+        </el-select> -->
         <el-select v-model="emotion" placeholder="全部情感" class="filter-select">
           <el-option label="全部情感" value="" />
           <el-option label="中性" value="中性" />
@@ -24,12 +30,12 @@
         />
       </div>
       <el-table :data="filteredData" class="voice-db-table" stripe border>
-        <el-table-column prop="name" label="语音名称" min-width="120">
+        <el-table-column prop="student" label="学生名称" min-width="120">
           <template #default="scope">
-            <el-link type="primary">{{ scope.row.name }}</el-link>
+            <el-link type="primary">{{ scope.row.student }}</el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="course" label="课程" min-width="100" />
+        <el-table-column prop="voiceName" label="语音名称" min-width="120" />
         <el-table-column prop="date" label="生成时间" min-width="140" />
         <el-table-column prop="duration" label="时长" min-width="70" />
         <el-table-column prop="speed" label="语速" min-width="80">
@@ -90,8 +96,8 @@ const dateRange = ref([])
 const page = ref(1)
 const tableData = ref([
   {
-    name: '数学函数讲解',
-    course: '高等数学',
+    student: '张三',
+    voiceName: '数学函数讲解',
     date: '2024-03-15 14:30',
     duration: '5:30',
     speed: '正常',
@@ -99,8 +105,8 @@ const tableData = ref([
     url: 'https://www.w3schools.com/html/horse.mp3',
   },
   {
-    name: '英语单词发音',
-    course: '大学英语',
+    student: '李四',
+    voiceName: '英语单词发音',
     date: '2024-03-14 10:15',
     duration: '3:45',
     speed: '慢速',
@@ -110,20 +116,20 @@ const tableData = ref([
 ])
 const filteredData = computed(() => {
   let data = tableData.value
-  if (search.value) data = data.filter((i) => i.name.includes(search.value))
-  if (course.value) data = data.filter((i) => i.course === course.value)
+  if (search.value) data = data.filter((i) => i.student.includes(search.value))
+  if (course.value) data = data.filter((i) => i.voiceName === course.value)
   if (emotion.value) data = data.filter((i) => i.emotion === emotion.value)
   // 日期筛选略
   return data
 })
 function onCollect(row) {
-  ElMessage.success(`已收藏：${row.name}`)
+  ElMessage.success(`已收藏语音：${row.voiceName}`)
 }
 function onDownload(row) {
   if (!row.url) return ElMessage.warning('暂无音频可下载')
   const a = document.createElement('a')
   a.href = row.url
-  a.download = row.name + '.mp3'
+  a.download = row.voiceName + '.mp3'
   a.click()
   ElMessage.success('下载成功')
 }
@@ -147,7 +153,7 @@ function onDelete(index) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 0 0 0;
+  padding: 15px 0 0 0;
   animation: fadeIn 0.7s;
 }
 .voice-db-card {

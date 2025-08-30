@@ -49,6 +49,11 @@ const router = createRouter({
           name: 'personalizedLearning',
           component: () => import('@/views/personalized_learning/index.vue'),
         },
+        {
+          path: 'test',
+          name: 'test',
+          component: () => import('@/views/test/index.vue'),
+        },
       ],
     },
     {
